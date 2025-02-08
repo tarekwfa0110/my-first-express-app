@@ -4,11 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <style>
+        body { background-color: #f0f0f0; text-align: center; padding: 50px; }
+        h1 { color: #333; }
+        h2 { color: #666; }
+        input { margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        #message { margin-top: 20px; color: #d32f2f; }
+    </style>
 </head>
-<body style="background-color: #f0f0f0; text-align: center; padding: 50px;">
-    <h1 style="color: #333;">Home</h1>
-    <h2 style="color: #666;">Welcome to the Home Page</h2>
-    <button onclick="sendToDB()" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer;">send to DB</button>
-</body>
+<body>
+    <h1>Home</h1>
+    <h2>Welcome to the Home Page</h2>
+    
+    <form id="myForm">
+        <input 
+            type="text" 
+            id="name" 
+            placeholder="Enter your name" 
+            name="name"
+            required
+        >
+        <button type="submit">Send to DB</button>
+    </form>
+    
+    <div id="message"></div>
 
+    <script>
+        document.getElementById('myForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const name = formData.get('name');
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    messageDiv.style.color = '#4CAF50';
+                    messageDiv.textContent = result.message;
+                } else {
+                    messageDiv.style.color = '#d32f2f';
+                    messageDiv.textContent = result.error;
+                }
+            } catch (err) {
+                messageDiv.style.color = '#d32f2f';
+                messageDiv.textContent = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
 </html>
